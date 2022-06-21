@@ -9,6 +9,8 @@ import com.mka1ugin.*;
 import java.io.IOException;
 import java.net.Socket;
 
+import javax.swing.JTextArea;
+
 public class DobotMove {
     private Socket socketClient = new Socket();
 
@@ -17,6 +19,14 @@ public class DobotMove {
     private Double maxDeviation = 0.01;
 
     private String ip = "";
+
+    private JTextArea debugTextArea;
+
+    public boolean isConnected() {
+
+        return this.socketClient.isConnected();
+
+    }
 
     public boolean connect(String ip, Integer port) {
         boolean ok = false;
@@ -27,7 +37,8 @@ public class DobotMove {
             Logger.instance.log("DobotMove connect success");
             ok = true;
         } catch (Exception e) {
-            Logger.instance.log("Connect failed:" + e.getMessage());
+            //Logger.instance.log("Connect failed:" + e.getMessage());
+            System.out.println("Connect failed:" + e.getMessage());
         }
         return ok;
     }
@@ -87,13 +98,17 @@ public class DobotMove {
         return moveJog(null);
     }
 
+    public void setDebugArea(JTextArea debugTextArea) {
+        this.debugTextArea = debugTextArea;
+    }
+
     public String MovJ(MovJEntity movJEntity) {
         if (socketClient.isClosed()) {
             Logger.instance.log("device does not connected!!!");
             return "device does not connected!!!";
         }
         StringBuilder str = new StringBuilder();
-        str.append("MovJ(" + movJEntity.X + "," + movJEntity.Y + "," + movJEntity.Z + "," + movJEntity.R + ")");
+        str.append("MovJ(" + movJEntity.X + "," + movJEntity.Y + "," + movJEntity.Z + "," + movJEntity.R);
         if (movJEntity.User != null) {
             str.append(",User=" + movJEntity.User);
         }
@@ -106,6 +121,8 @@ public class DobotMove {
         if (movJEntity.AccJ != null) {
             str.append(",AccJ=" + movJEntity.AccJ);
         }
+        str.append(")");
+        debugTextArea.append(str.toString());
         if (!sendData(str.toString())) {
             return str + SEND_ERROR;
         }
@@ -119,7 +136,7 @@ public class DobotMove {
         }
         StringBuilder str = new StringBuilder();
 
-        str.append("MovL(" + movLEntity.X + "," + movLEntity.Y + "," + movLEntity.Z + "," + movLEntity.R + ")");
+        str.append("MovL(" + movLEntity.X + "," + movLEntity.Y + "," + movLEntity.Z + "," + movLEntity.R);
         if (movLEntity.User != null) {
             str.append(",User=" + movLEntity.User);
         }
@@ -132,6 +149,8 @@ public class DobotMove {
         if (movLEntity.AccL != null) {
             str.append(",AccL=" + movLEntity.AccL);
         }
+        str.append(")");
+        debugTextArea.append(str.toString());
         if (!sendData(str.toString())) {
             return str + SEND_ERROR;
         }
@@ -144,7 +163,7 @@ public class DobotMove {
         }
         StringBuilder str = new StringBuilder();
         str.append("JointMovJ(" + jointMovJEntity.J1 + "," + jointMovJEntity.J2 + "," + jointMovJEntity.J3 + ","
-                + jointMovJEntity.J4 + ")");
+                + jointMovJEntity.J4);
         if (jointMovJEntity.User != null) {
             str.append(",User=" + jointMovJEntity.User);
         }
@@ -157,6 +176,7 @@ public class DobotMove {
         if (jointMovJEntity.AccJ != null) {
             str.append(",AccJ=" + jointMovJEntity.AccJ);
         }
+        str.append(")");
         if (!sendData(str.toString())) {
             return str + SEND_ERROR;
         }
@@ -210,6 +230,10 @@ public class DobotMove {
             ok = true;
         }
         return ok;
+    }
+
+    public boolean isReach(Dashboard dashboard, Point target) {
+        return (Double.compare(Deviation.getDeviation(dashboard, target), this.maxDeviation) > 0) ? false : true;
     }
 
 }

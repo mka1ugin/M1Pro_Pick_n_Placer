@@ -8,7 +8,7 @@ public class ErrorInfoBean {
     private Description en;
     private Description zh_CN;
 
-    class Description
+    public class Description
     {
         public String description;
         public String cause;

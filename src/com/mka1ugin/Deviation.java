@@ -3,6 +3,7 @@ package com.mka1ugin;
 import com.dobot.api.Dashboard;
 
 public class Deviation {
+
     public static Double getDeviation(Dashboard dashboard,
             Point target) {
 

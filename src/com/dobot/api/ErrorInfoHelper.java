@@ -18,7 +18,7 @@ public class ErrorInfoHelper {
     private static ErrorInfoHelper instance=new ErrorInfoHelper();
 
 
-    private ErrorInfoHelper(){
+    public ErrorInfoHelper(){
 
         String projectPath = System.getProperty("user.dir");
         String alarmControllerPath = projectPath+"\\resource\\alarm_controller.json";
@@ -91,6 +91,7 @@ public class ErrorInfoHelper {
 
     public boolean parseResult(String strResult)
     {
+        
         int iBegPos = strResult.indexOf('{');
         if (iBegPos < 0)
         {
@@ -111,8 +112,13 @@ public class ErrorInfoHelper {
         {
             return bOk;
         }
+        if (!strResult.contains(",")) {
+            return bOk;
+        }
+
         StringBuilder sb = new StringBuilder();
         strResult = '[' + strResult+']';
+        System.out.println(strResult);
         JSONArray jsonArray = JSONArray.parseArray(strResult);
 
         for(int i=0 ;i<jsonArray.size() ;i++){

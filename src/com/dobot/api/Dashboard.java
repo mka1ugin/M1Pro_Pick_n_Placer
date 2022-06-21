@@ -2,8 +2,6 @@ package com.dobot.api;
 
 import java.io.IOException;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class Dashboard {
     private Socket socketClient = new Socket();
@@ -15,6 +13,12 @@ public class Dashboard {
     private Double[] ToolVectorActual = { 0.0, 0.0, 0.0, 0.0 };
     private Double[] QActual = { 0.0, 0.0, 0.0, 0.0 };
 
+    public boolean isConnected() {
+
+        return this.socketClient.isConnected();
+
+    }
+
     public boolean connect(String ip, int port) {
         boolean ok = false;
         try {
@@ -23,7 +27,8 @@ public class Dashboard {
             Logger.instance.log("Dashboard connect success");
             ok = true;
         } catch (Exception e) {
-            Logger.instance.log("Connect failed:" + e.getMessage());
+            // Logger.instance.log("Connect failed:" + e.getMessage());
+            System.out.println("Connect failed:" + e.getMessage());
         }
         return ok;
     }
@@ -54,7 +59,8 @@ public class Dashboard {
             return str + ":send error";
         }
 
-        return waitReply(5000);
+        //return waitReply(5000);
+        return "";
     }
 
     public String clearError() {
@@ -67,7 +73,8 @@ public class Dashboard {
             return str + SEND_ERROR;
         }
 
-        return waitReply(5000);
+        //return waitReply(5000);
+        return "";
     }
 
     public String PowerOn() {
@@ -150,7 +157,8 @@ public class Dashboard {
         if (!sendData(str)) {
             return str + SEND_ERROR;
         }
-        return waitReply(5000);
+        //return readRaw(5000);
+        return "";
     }
 
     public String speedJ(int ratio) {
@@ -162,7 +170,8 @@ public class Dashboard {
         if (!sendData(str)) {
             return str + SEND_ERROR;
         }
-        return waitReply(5000);
+        //return waitReply(5000);
+        return "";
     }
 
     public String speedL(int ratio) {
@@ -174,7 +183,8 @@ public class Dashboard {
         if (!sendData(str)) {
             return str + SEND_ERROR;
         }
-        return waitReply(5000);
+        //return waitReply(5000);
+        return "";
     }
 
     public String AccJ(int ratio) {
@@ -186,7 +196,8 @@ public class Dashboard {
         if (!sendData(str)) {
             return str + SEND_ERROR;
         }
-        return waitReply(5000);
+        //return waitReply(5000);
+        return "";
     }
 
     public String AccL(int ratio) {
@@ -198,7 +209,8 @@ public class Dashboard {
         if (!sendData(str)) {
             return str + SEND_ERROR;
         }
-        return waitReply(5000);
+        //return waitReply(5000);
+        return "";
     }
 
     public boolean sendData(String str) {
@@ -298,7 +310,7 @@ public class Dashboard {
             if (socketClient.getSoTimeout() != timeout) {
                 socketClient.setSoTimeout(timeout);
             }
-            byte[] buffer = new byte[1024]; // 缓冲
+            byte[] buffer = new byte[1024]; // buffer
             int len = socketClient.getInputStream().read(buffer);// 每次读取的长度（正常情况下是1024，最后一次可能不是1024，如果传输结束，返回-1）
             reply = new String(buffer, 0, len, "UTF-8");
         } catch (IOException e) {
@@ -344,7 +356,7 @@ public class Dashboard {
 
     private int parseOneInt(String data) {
 
-        int result = -1;
+        int result = -999;
 
         int iBegPos = data.indexOf('{');
         if (iBegPos < 0) {
@@ -361,6 +373,10 @@ public class Dashboard {
         }
 
         data = data.substring(iBegPos + 1, iEndPos);
+
+        if (data.contains(".") || data.contains(",")) {
+            return result;
+        }
 
         result = Integer.parseInt(data);
 
@@ -380,7 +396,11 @@ public class Dashboard {
             return result;
         }
 
-        String responce = readRaw(15000);
+        String responce = "";
+
+        while (!responce.contains("RobotMode()")) {
+            responce = readRaw(15000);
+        }
 
         int modeInt = parseOneInt(responce);
 
@@ -416,4 +436,50 @@ public class Dashboard {
         return String.format("UNKNOW：RobotMode=" + responce + "");
     }
 
+    public String robotModeRU() {
+
+        if (socketClient.isClosed()) {
+            return null;
+        }
+
+        String str = "RobotMode()";
+        if (!sendDataSilent(str)) {
+            return null;
+        }
+
+        String responce = readRaw(15000);
+
+        int modeInt = parseOneInt(responce);
+
+        switch (modeInt) {
+            case -1:
+                return new String("Нет контроллера");
+            case 0:
+                return new String("Не подключен");
+            case 1:
+                return new String("Инициализация");
+            case 2:
+                return new String("Тормоз снят");
+            case 3:
+                return new String("Зарезервировано");
+            case 4:
+                return new String("Неактивен");
+            case 5:
+                return new String("Активен   ");
+            case 6:
+                return new String("Обнаружено препятствие");
+            case 7:
+                return new String("В движении");
+            case 8:
+                return new String("Запись траектории");
+            case 9:
+                return new String("Ошибка");
+            case 10:
+                return new String("Пауза");
+            case 11:
+                return new String("Холостой ход");
+            default:
+                return null;
+        }
+    }
 }

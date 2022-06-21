@@ -16,13 +16,21 @@ public class Feedback {
     private int port;
 
 
+    public boolean isConnected() {
+
+        return this.socketClient.isConnected();
+
+    }
+    
     public boolean connect(String ip, Integer port)
     {
         boolean bOk = false;
         try
         {
+
             this.ip = ip;
             this.port = port;
+
 
 
             thread= new Thread(){
@@ -32,7 +40,8 @@ public class Feedback {
                         onRecvData();
                         return;
                     } catch (Exception e) {
-                        Logger.instance.log(e.getMessage());
+                        //Logger.instance.log(e.getMessage());
+                        System.out.println(e.getMessage());
                     }
 
                 }
@@ -45,7 +54,8 @@ public class Feedback {
         }
         catch (Exception ex)
         {
-            Logger.instance.log("Connect failed:" + ex.toString());
+            //Logger.instance.log("Connect failed:" + ex.toString());
+            System.out.println("Connect failed:" + ex.toString());
         }
         return bOk;
     }
@@ -278,7 +288,8 @@ public class Feedback {
     /// 接收返回的数据并解析处理
     /// </summary>
     public void onRecvData() throws IOException {
-        byte[] buffer = new byte[4320];//1440*3
+        //byte[] buffer = new byte[4320];//1440*3
+        byte[] buffer = new byte[1440];//1440*3
         socketClient = new Socket(ip,port);
         int iHasRead = 0;
         while (!socketClient.isClosed())

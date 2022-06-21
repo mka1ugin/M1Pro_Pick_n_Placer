@@ -23,4 +23,22 @@ public class MovLEntity {
         this.R = r;
     }
 
+    public MovLEntity(Double x,
+            Double y,
+            Double z,
+            Double r,
+            int speedL,
+            int accL,
+            int userCS,
+            int toolCS) {
+        this.X = x;
+        this.Y = y;
+        this.Z = z;
+        this.R = r;
+        this.SpeedL = speedL;
+        this.AccL = accL;
+        this.User = userCS;
+        this.Tool = toolCS;
+    }
+
 }

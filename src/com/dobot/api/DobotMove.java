@@ -20,7 +20,7 @@ public class DobotMove {
 
     private String ip = "";
 
-    private JTextArea debugTextArea;
+    private static JTextArea debugTextArea;
 
     public boolean isConnected() {
 
@@ -98,8 +98,8 @@ public class DobotMove {
         return moveJog(null);
     }
 
-    public void setDebugArea(JTextArea debugTextArea) {
-        this.debugTextArea = debugTextArea;
+    public static void setDebugArea(JTextArea area) {
+        debugTextArea = area;
     }
 
     public String MovJ(MovJEntity movJEntity) {
@@ -122,7 +122,9 @@ public class DobotMove {
             str.append(",AccJ=" + movJEntity.AccJ);
         }
         str.append(")");
-        debugTextArea.append(str.toString());
+
+        debugTextArea.setText(str.toString() + "\r\n");
+
         if (!sendData(str.toString())) {
             return str + SEND_ERROR;
         }
@@ -150,7 +152,9 @@ public class DobotMove {
             str.append(",AccL=" + movLEntity.AccL);
         }
         str.append(")");
-        debugTextArea.append(str.toString());
+        
+        debugTextArea.setText(str.toString() + "\r\n");
+
         if (!sendData(str.toString())) {
             return str + SEND_ERROR;
         }

@@ -33,6 +33,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.text.DefaultCaret;
 
 public class MainUI {
 
@@ -95,7 +96,7 @@ public class MainUI {
         generateProgressBar(panel);
         // generateDisplay(panel);
         generateLogArea(panel);
-        generateDebugArea(panel);
+        generateDebugArea(panel, frame);
 
         try {
 
@@ -660,7 +661,7 @@ public class MainUI {
         panel.add(Box.createVerticalStrut(10));
     }
 
-    private static void generateDebugArea(JPanel panel) {
+    private static void generateDebugArea(JPanel panel, JFrame frame) {
         TitledBorder title;
         title = BorderFactory.createTitledBorder("Debug");
         title.setTitleJustification(TitledBorder.CENTER);
@@ -670,7 +671,9 @@ public class MainUI {
         box.setMaximumSize(new Dimension(Integer.MAX_VALUE, 50));
         box.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        debugTextArea.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
         debugTextArea.setEditable(false);
+        debugTextArea.setBackground(frame.getBackground());
 
         box.add(debugTextArea);
         

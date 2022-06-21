@@ -116,8 +116,7 @@ public class Workspace {
     }
 
     public void setDebugArea(JTextArea debugTextArea) {
-        DobotMove move = new DobotMove();
-        move.setDebugArea(debugTextArea);
+        DobotMove.setDebugArea(debugTextArea);
     }
 
     public Double getPlaceZ() {
@@ -220,49 +219,6 @@ public class Workspace {
 
     }
 
-    @Deprecated
-    public boolean runProgram() {
-
-        if (this.program.size() < 1) {
-            return false;
-        }
-
-        for (int i : this.program.getPoints().keySet()) {
-
-            Point place = this.program.getPoints().get(i).getPoint();
-            Point abovePlace = new Point(place.x, place.y, place.z + this.liftPlace, place.r);
-            MembraneType type = this.program.getPoints().get(i).getType();
-
-            Point pick = this.pickPoints.get(type);
-            Point abovePick = new Point(pick.x, pick.y, pick.z + this.liftPick, pick.r);
-
-            dobotmove.MovJ(abovePick.getMovJEntity());
-            dobotmove.waitForReach(this.dashboard, abovePick);
-
-            dobotmove.MovL(pick.getMovLEntity());
-            dobotmove.waitForReach(this.dashboard, pick);
-
-            // TODO
-
-            dobotmove.MovL(abovePick.getMovLEntity());
-            dobotmove.waitForReach(this.dashboard, abovePick);
-
-            dobotmove.MovJ(abovePlace.getMovJEntity());
-            dobotmove.waitForReach(this.dashboard, abovePlace);
-
-            dobotmove.MovL(place.getMovLEntity());
-            dobotmove.waitForReach(this.dashboard, place);
-
-            // TODO
-
-            dobotmove.MovL(abovePlace.getMovLEntity());
-            dobotmove.waitForReach(this.dashboard, abovePlace);
-
-            this.progress = (i + 1.0) * 100.0 / this.program.size();
-        }
-        return true;
-    }
-
     public void runProgramThread(JTextArea logArea, String pathToPoints) {
 
         this.logArea = logArea;
@@ -299,39 +255,6 @@ public class Workspace {
         return this.progress;
     }
 
-    @Deprecated
-    public void testPickPoints() {
-
-        Double liftZ = 100.0;
-
-        int i = 1;
-
-        for (MembraneType type : this.pickPoints.keySet()) {
-
-            System.out.println("Pickpoint for " + type.name());
-
-            Point p = this.pickPoints.get(type);
-
-            Point abovePoint = new Point(p.getX(),
-                    p.getY(),
-                    p.getZ() + liftZ,
-                    p.getR());
-
-            dobotmove.MovJ(abovePoint.getMovJEntity());
-            dobotmove.waitForReach(dashboard, abovePoint);
-
-            dobotmove.MovL(p.getMovLEntity());
-            dobotmove.waitForReach(dashboard, p);
-
-            dobotmove.MovL(abovePoint.getMovLEntity());
-            dobotmove.waitForReach(dashboard, abovePoint);
-
-            i++;
-
-        }
-
-    }
-
     public Thread getNewProgramThread() {
 
         Thread programThread = new Thread() {
@@ -345,12 +268,10 @@ public class Workspace {
                     return;
                 }
 
-
-
                 for (int i : program.getPoints().keySet()) {
 
                     Point place = program.getPoints().get(i).getPoint();
-                    Point abovePlace = new Point(place.x, place.y, place.z + liftPlace, place.r);
+                    Point abovePlace = new Point(place.x, place.y, placeZ + liftPlace, place.r);
                     MembraneType type = program.getPoints().get(i).getType();
 
                     Point pick = pickPoints.get(type);
@@ -392,7 +313,7 @@ public class Workspace {
                         }
                     }
 
-                   dobotmove.MovJ(abovePlace.getMovJEntity(speedJ, accJ, placeCS, toolCS));
+                    dobotmove.MovJ(abovePlace.getMovJEntity(speedJ, accJ, placeCS, toolCS));
                     while (!dobotmove.waitForReach(dashboard, abovePlace)) {
                         try {
                             sleep(50);

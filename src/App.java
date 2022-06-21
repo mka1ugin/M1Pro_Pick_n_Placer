@@ -60,7 +60,7 @@ public class App extends JFrame {
 
     private static void saveProps() {
 
-        try (OutputStream output = new FileOutputStream("C:\\TCP-IP-4Axis-Java\\config.properties")) {
+        try (OutputStream output = new FileOutputStream("config.properties")) {
             props.store(output, null);
         } catch (IOException io) {
             io.printStackTrace();

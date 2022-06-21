@@ -31,7 +31,6 @@ import javax.swing.event.ChangeListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.MaskFormatter;
 
-
 public class SettingsUI {
 
     static String pickpointsPath = "";
@@ -71,7 +70,7 @@ public class SettingsUI {
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setPreferredSize(new Dimension(1000, 1000));
 
-        loadProps(props);
+        loadProps(props, workspace);
 
         generatePickPointsPicker(panel);
         panel.add(Box.createVerticalStrut(10));
@@ -83,7 +82,7 @@ public class SettingsUI {
         panel.add(Box.createVerticalStrut(10));
         generateIOSettings(panel);
         panel.add(Box.createVerticalStrut(10));
-        generateApplyButton(panel, workspace, props);        
+        generateApplyButton(panel, workspace, props);
 
     }
 
@@ -100,7 +99,7 @@ public class SettingsUI {
 
         box.setBorder(title);
 
-        JButton button = new JButton("Выбрать файл");        
+        JButton button = new JButton("Выбрать файл");
 
         box.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
         pickpointsTextField.setMaximumSize(new Dimension(600, 25));
@@ -174,7 +173,6 @@ public class SettingsUI {
 
         Box placeZSettingBox = Box.createVerticalBox();
 
-
         JLabel speedJLabel = new JLabel("Скорость MovJ, %");
         speedJLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
         speedJSettingBox.add(speedJLabel);
@@ -243,19 +241,19 @@ public class SettingsUI {
 
         JLabel pickCSLabel = new JLabel("СК захвата");
         pickCSLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
-        JComboBox<Integer> pickCSComboBox= new JComboBox<>();
+        JComboBox<Integer> pickCSComboBox = new JComboBox<>();
         picksCSSettingBox.add(pickCSLabel);
-        picksCSSettingBox.add(pickCSComboBox); 
+        picksCSSettingBox.add(pickCSComboBox);
 
         JLabel placeCSLabel = new JLabel("СК установки");
         placeCSLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
-        JComboBox<Integer> placeCSComboBox= new JComboBox<>();
+        JComboBox<Integer> placeCSComboBox = new JComboBox<>();
         placesCSSettingBox.add(placeCSLabel);
         placesCSSettingBox.add(placeCSComboBox);
 
         JLabel toolCSLabel = new JLabel("СК инструмента");
         toolCSLabel.setAlignmentX(JLabel.CENTER_ALIGNMENT);
-        JComboBox<Integer> toolCSComboBox= new JComboBox<>();
+        JComboBox<Integer> toolCSComboBox = new JComboBox<>();
         toolCSSettingBox.add(toolCSLabel);
         toolCSSettingBox.add(toolCSComboBox);
 
@@ -281,7 +279,6 @@ public class SettingsUI {
         pickCSComboBox.setSelectedIndex(pickCS);
         placeCSComboBox.setSelectedIndex(placeCS);
         toolCSComboBox.setSelectedIndex(toolCS);
-
 
         speedJSlider.addChangeListener(new ChangeListener() {
 
@@ -347,7 +344,7 @@ public class SettingsUI {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                pickCS = pickCSComboBox.getSelectedIndex();                
+                pickCS = pickCSComboBox.getSelectedIndex();
             }
 
         });
@@ -356,7 +353,7 @@ public class SettingsUI {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                placeCS = placeCSComboBox.getSelectedIndex();                
+                placeCS = placeCSComboBox.getSelectedIndex();
             }
 
         });
@@ -365,7 +362,7 @@ public class SettingsUI {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                toolCS = toolCSComboBox.getSelectedIndex();                
+                toolCS = toolCSComboBox.getSelectedIndex();
             }
 
         });
@@ -374,7 +371,7 @@ public class SettingsUI {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                placeZ = Double.parseDouble(placeZTextField.getText());                
+                placeZ = Double.parseDouble(placeZTextField.getText());
             }
 
         });
@@ -411,7 +408,7 @@ public class SettingsUI {
         TitledBorder title;
         title = BorderFactory.createTitledBorder("IP-адрес робота");
         title.setTitleJustification(TitledBorder.CENTER);
-       
+
         ipAddressTextField.setText(ipAddress);
 
         Box box = Box.createHorizontalBox();
@@ -580,9 +577,9 @@ public class SettingsUI {
     }
 
     private static void generateApplyButton(JPanel panel, Workspace workspace, Properties props) {
-        
+
         Box box = Box.createHorizontalBox();
-        
+
         JButton button = new JButton("Применить настройки");
         box.add(button);
 
@@ -594,37 +591,41 @@ public class SettingsUI {
             public void actionPerformed(ActionEvent e) {
                 workspace.acceptSettings(ipAddress, pickpointsPath, speedJ, speedL, accJ, accL, liftPick, liftPlace,
                         delayPick, delayPlace, pumpPort, valvePort, pickCS, placeCS, toolCS, placeZ);
-                saveProps(props);
+                saveProps(props, workspace);
             }
 
         });
     }
 
-    private static void loadProps(Properties props) {
+    private static void loadProps(Properties props, Workspace workspace) {
 
-        pickpointsPath = props.getProperty("pickpointsPath","\\pickpoints.csv");
+        pickpointsPath = props.getProperty("pickpointsPath", "\\pickpoints.csv");
         ipAddress = props.getProperty("ipAddress", "192.168.002.006");
-        speedJ = Integer.parseInt(props.getProperty("speedJ","100"));
-        speedL = Integer.parseInt(props.getProperty("speedL","100"));
-        accJ = Integer.parseInt(props.getProperty("accJ","100"));
-        accL = Integer.parseInt(props.getProperty("accL","100"));
-        liftPick = Integer.parseInt(props.getProperty("liftPick","25"));
-        liftPlace = Integer.parseInt(props.getProperty("liftPlace","25"));
-        delayPick = Double.parseDouble(props.getProperty("delayPick","0.5"));
-        delayPlace = Double.parseDouble(props.getProperty("delayPlace","0.5"));
-        pumpPort = DO.parseDO(props.getProperty("pumpPort","DO1"));
-        valvePort = DO.parseDO(props.getProperty("valvePort","DO2"));
-        pickCS = Integer.parseInt(props.getProperty("pickCS","0"));
-        placeCS = Integer.parseInt(props.getProperty("placeCS","0"));
-        toolCS = Integer.parseInt(props.getProperty("toolCS","0"));
-        placeZ=Double.parseDouble(props.getProperty("placeZ","50.0"));
+        speedJ = Integer.parseInt(props.getProperty("speedJ", "100"));
+        speedL = Integer.parseInt(props.getProperty("speedL", "100"));
+        accJ = Integer.parseInt(props.getProperty("accJ", "100"));
+        accL = Integer.parseInt(props.getProperty("accL", "100"));
+        liftPick = Integer.parseInt(props.getProperty("liftPick", "25"));
+        liftPlace = Integer.parseInt(props.getProperty("liftPlace", "25"));
+        delayPick = Double.parseDouble(props.getProperty("delayPick", "0.5"));
+        delayPlace = Double.parseDouble(props.getProperty("delayPlace", "0.5"));
+        pumpPort = DO.parseDO(props.getProperty("pumpPort", "DO1"));
+        valvePort = DO.parseDO(props.getProperty("valvePort", "DO2"));
+        pickCS = Integer.parseInt(props.getProperty("pickCS", "0"));
+        placeCS = Integer.parseInt(props.getProperty("placeCS", "0"));
+        toolCS = Integer.parseInt(props.getProperty("toolCS", "0"));
+        placeZ = Double.parseDouble(props.getProperty("placeZ", "50.0"));
+
+        workspace.acceptSettings(ipAddress, pickpointsPath, speedJ, speedL, accJ, accL, liftPick, liftPlace, delayPick,
+                delayPlace, pumpPort, valvePort, pickCS, placeCS, toolCS, placeZ);
+
     }
 
-    private static void saveProps(Properties props) {
+    private static void saveProps(Properties props, Workspace workspace) {
 
         NumberFormat nf = NumberFormat.getNumberInstance(Locale.PRC);
-        DecimalFormat df = (DecimalFormat)nf;
-        //DecimalFormat df = new DecimalFormat("#0.0");
+        DecimalFormat df = (DecimalFormat) nf;
+        // DecimalFormat df = new DecimalFormat("#0.0");
 
         props.setProperty("pickpointsPath", pickpointsPath);
         props.setProperty("ipAddress", ipAddress);
@@ -643,7 +644,10 @@ public class SettingsUI {
         props.setProperty("toolCS", String.valueOf(toolCS));
         props.setProperty("placeZ", df.format(placeZ));
 
-        try (OutputStream output = new FileOutputStream("C:\\TCP-IP-4Axis-Java\\config.properties")) {
+        workspace.acceptSettings(ipAddress, pickpointsPath, speedJ, speedL, accJ, accL, liftPick, liftPlace, delayPick,
+                delayPlace, pumpPort, valvePort, pickCS, placeCS, toolCS, placeZ);
+
+        try (OutputStream output = new FileOutputStream("config.properties")) {
             props.store(output, null);
             System.out.println("Settings saved");
         } catch (IOException io) {
